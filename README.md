@@ -36,3 +36,54 @@ Com interface temática esportiva e funcionalidades flexíveis, o sistema ajuda 
 
 ## 📂 Estrutura do Projeto
 
+/sorteador-pelada
+├── index.html # Estrutura do site
+├── style.css # Estilos visuais
+├── script.js # Lógica de sorteio e interações
+└── assets/ # (opcional) imagens, ícones e recursos
+
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+- **HTML5** → estrutura da aplicação  
+- **CSS3** → design, cores, layout e responsividade  
+- **JavaScript (ES6+)** → lógica de sorteio e regras do sistema  
+- **LocalStorage** → persistência de jogadores no navegador  
+
+---
+
+## 📖 Como Usar
+
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/sorteador-pelada.git
+   
+Abra o arquivo index.html diretamente no navegador.
+
+Escolha uma das três formas de sorteio:
+
+Manual → insira jogadores e goleiros, defina restrições e sorteie.
+
+Colar nomes → cole os nomes e sorteie automaticamente.
+
+Sorteio por números → cada jogador clica para pegar um número único.
+
+Visualize os times formados em tela e exporte se necessário.
+
+🔮 Melhorias Futuras
+
+📊 Balanceamento automático por habilidade dos jogadores.
+
+🖼️ Exportação dos resultados em imagem.
+
+🔄 Reembaralhar mantendo goleiros fixos.
+
+📱 Transformar em PWA para uso offline no celular.
+
+👨‍💻 Autor
+
+Desenvolvido por Hiago Souza
+.
+Se gostou do projeto, ⭐ dê uma estrela no repositório!
