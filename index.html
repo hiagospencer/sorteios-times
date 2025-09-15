@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sorteador de Pelada</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo"><img
+                    src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='30' fill='%23ffffff' opacity='0.12'/><path d='M32 10 L36 30 L52 34 L38 44 L42 60 L32 50 L22 60 L26 44 L12 34 L28 30 Z' fill='%23ffd54f' /></svg>"
+                    alt="logo"></div>
+            <div>
+                <h1>Sorteador de Pelada</h1>
+                <p class="lead">Crie times rápidos e equilibrados — com goleiros separados, pares que não podem jogar
+                    juntos e três modos de sorteio.</p>
+            </div>
+        </header>
+
+        <div class="grid">
+            <main>
+                <div class="card">
+                    <div class="section-title">1) Configuração geral</div>
+                    <div class="row">
+                        <div class="col">
+                            <label>Jogadores de linha (ex: 20)</label>
+                            <input id="field_outfield" type="number" min="0" value="20">
+                        </div>
+                        <div class="col">
+                            <label>Goleiros (ex: 4)</label>
+                            <input id="field_goalkeepers" type="number" min="0" value="4">
+                        </div>
+                    </div>
+                    <div style="margin-top:10px" class="row">
+                        <div class="col">
+                            <label>Quantidade de times</label>
+                            <input id="field_teams" type="number" min="1" value="4">
+                        </div>
+                        <div class="col">
+                            <label>Jogadores por time (linha)</label>
+                            <input id="field_per_team" type="number" min="1" value="5">
+                        </div>
+                    </div>
+                    <div style="margin-top:10px" class="muted">Total esperado: <span id="expected_total">24</span>
+                        (linha + goleiros adicionados separadamente)</div>
+                </div>
+
+                <div class="card" style="margin-top:12px">
+                    <div class="section-title">Modos de sorteio</div>
+
+                    <div style="display:flex;gap:8px;margin-bottom:10px">
+                        <button id="mode_manual" class="small">Modo 1 — Manual (com restrições)</button>
+                        <button id="mode_paste" class="small btn-ghost">Modo 2 — Colar nomes</button>
+                        <button id="mode_number" class="small btn-ghost">Modo 3 — Sorteio por números</button>
+                    </div>
+
+                    <!-- MANUAL / RESTRICTIONS -->
+                    <div id="mode_manual_panel">
+                        <label>Nomes dos jogadores de linha (uma linha por jogador)</label>
+                        <textarea id="textarea_players_manual"
+                            placeholder="Ex: João\nCarlos\n... (pode salvar/recuperar lista)"></textarea>
+
+                        <div style="margin-top:8px" class="flex">
+                            <button id="save_list" class="btn-ghost small">Salvar lista</button>
+                            <button id="load_list" class="btn-ghost small">Carregar lista</button>
+                            <button id="clear_list" class="btn-ghost small">Limpar</button>
+                            <div style="margin-left:auto" class="muted">Salva no localStorage</div>
+                        </div>
+
+                        <div style="margin-top:14px">
+                            <div class="section-title">Pares que <u>não</u> podem jogar juntos (dinâmico)</div>
+                            <div class="muted">Adicione quantos pares/grupos quiser. Cada campo aceita vários nomes
+                                separados por vírgula.</div>
+                            <div class="pairs-list" id="pairs_list"></div>
+                            <div style="margin-top:8px" class="flex">
+                                <button id="add_pair" class="small btn-ghost">Adicionar restrição</button>
+                                <button id="clear_pairs" class="small btn-ghost">Limpar restrições</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:12px">
+                            <label>Goleiros — informe um por linha</label>
+                            <textarea id="textarea_gks"
+                                placeholder="Goleiro 1\nGoleiro 2\n... (cada time terá exatamente 1 GK)"></textarea>
+                            <div class="muted">Goleiros serão alocados 1 por time automaticamente (não podem ficar
+                                juntos).</div>
+                        </div>
+
+                        <div style="margin-top:12px;display:flex;gap:8px">
+                            <button id="draw_manual" class="small">Sortear times (Manual)</button>
+                            <button id="preview_manual" class="small btn-ghost">Preview (check restrições)</button>
+                        </div>
+                    </div>
+
+                    <!-- PASTE MODE -->
+                    <div id="mode_paste_panel" style="display:none;margin-top:10px">
+                        <label>Cole todos os nomes (vírgula ou nova linha)</label>
+                        <textarea id="textarea_players_paste"
+                            placeholder="João, Maria, Carlos, ... ou\nJoão\nMaria\nCarlos"></textarea>
+                        <div style="margin-top:8px" class="flex">
+                            <button id="draw_paste" class="small">Sortear aleatório</button>
+                            <button id="save_paste" class="small btn-ghost">Salvar lista</button>
+                            <button id="clear_paste" class="small btn-ghost">Limpar</button>
+                        </div>
+                    </div>
+
+                    <!-- NUMBER MODE -->
+                    <div id="mode_number_panel" style="display:none;margin-top:10px">
+                        <label>Quantidade total de jogadores</label>
+                        <input id="number_mode_total" type="number" min="1" value="15">
+                        <label style="margin-top:8px">Como mapear números para times</label>
+                        <div class="muted">Use intervalos: exemplo para 3 times em 15 jogadores => 1-5 time A, 6-10 time
+                            B, 11-15 time C</div>
+                        <div style="margin-top:8px" class="row">
+                            <input id="number_ranges" placeholder="Ex: 1-5,6-10,11-15" />
+                            <button id="init_number_draw" class="small">Iniciar sorteio</button>
+                        </div>
+                        <div style="margin-top:8px" class="muted">Cada jogador ao clicar no botão pega um número sem
+                            repetir.</div>
+                        <div style="margin-top:8px" class="flex">
+                            <button id="draw_number_one" class="small">Sortear número (um por vez)</button>
+                            <button id="reset_number_draw" class="small btn-ghost">Resetar números</button>
+                        </div>
+                        <div id="number_draw_log" style="margin-top:10px;min-height:40px"></div>
+                    </div>
+
+                </div>
+
+                <div class="card" style="margin-top:12px">
+                    <div class="section-title">Resultados</div>
+                    <div id="results_area" class="results"></div>
+                    <div style="margin-top:12px;display:flex;gap:8px">
+                        <button id="export_json" class="small btn-ghost">Exportar JSON</button>
+                        <button id="copy_results" class="small btn-ghost">Copiar resultados</button>
+                        <button id="clear_results" class="small btn-ghost">Limpar</button>
+                    </div>
+                </div>
+
+            </main>
+
+            <aside class="side">
+                <div class="card">
+                    <div class="section-title">Ajuda rápida</div>
+                    <div class="muted">
+                        • Se escolher goleiros, informe cada um em campo separado. Será garantido 1 GK por time.<br>
+                        • As restrições (pares) impedem que todos os nomes do grupo apareçam no mesmo time (boa para
+                        evitar amigos que não querem jogar juntos).
+                        • No Modo números, defina os intervalos para mapear números em times.
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:12px">
+                    <div class="section-title">Listas salvas</div>
+                    <div class="muted">Última lista salva:</div>
+                    <div style="margin-top:8px" id="last_saved_list" class="chip">(nenhuma)</div>
+                    <div style="margin-top:8px" class="flex">
+                        <button id="clear_storage" class="small btn-ghost">Limpar storage</button>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+
+        <footer>
+           &copy; Desenvolvido por Hiago Souza
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
